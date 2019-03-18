@@ -65,7 +65,9 @@ def show_board(gid):
     res = get('http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + gid,
               headers=header)
     res_j = res.json()
+    l = [list(i) for i in res_j['output'].split('\n')]
     print(res_j['output'])
+    return l[:13]
 
 
 def move(gid):
