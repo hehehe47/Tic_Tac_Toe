@@ -8,7 +8,7 @@
 from requests import get
 from requests import post
 
-from Evaluation_Function import evaluation_Function as minimax
+from Eval import findbestmove as bmove
 
 
 # from import as
@@ -51,7 +51,7 @@ class Game:
             res = res.json()
         print('Create Game Successfully! GameID= ' + str(res['gameId']))
 
-    def get_moves(self, gid, count):
+    def get_moves(self, gid):
         count = '20'
         res = get(
             'http://www.notexponential.com/aip2pgaming/api/index.php?type=moves&gameId=' + gid + '&count=+' + count,
@@ -68,9 +68,9 @@ class Game:
         res = get('http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + gid,
                   headers=self.header)
         res_j = res.json()
-        l = [list(i) for i in res_j['output'].split('\n')]
-        # print(res_j['output'])
-        return l[:13]
+        l = [list(i) for i in res_j['output'].split('\n')][:self.boardSize]
+        print(res_j['output'])
+        return l
 
     def move(self, gid, tid, m):
         # tmp = list(input('Please input TeamID and your move (TeamID Move): ').split(' '))
@@ -88,6 +88,7 @@ class Game:
             print(res_j.get('message', 'Can\'t make such move.') + '\n')
 
     def start_game(self):
+        i = 0
         gid = input('Please input GameID: ')
         while True:
             res = get('http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + gid,
@@ -97,14 +98,23 @@ class Game:
             else:
                 gid = input('Invalid GameId. Please input GameID: ')
         while True:
-            i = 0
             list_map = self.show_board(gid)
-            m = [minimax(list_map, self.target), (self.boardSize // 2, self.boardSize // 2)][i == 0]
-            if m == 'X':
+            # m =
+            # TODO: minimax return X or O
+
+            if i == 0:
+                m = str(self.boardSize // 2) + ',' + str(self.boardSize // 2)
+            else:
+                a, b = bmove(list_map, self.target, i % 2 != 0)  # True for X
+                m = str(a) + ',' + str(b)
+            # m = ','.join(list(map(str, [(self.boardSize // 2 + i, self.boardSize // 2 + i),
+            #                             (self.boardSize // 2 + i, self.boardSize // 2 + i)][
+            #     i == 0])))
+            if m == 'X,':
                 return 'X wins'
             elif m == 'O':
                 return 'O wins'
-            tid = ['1089', '1105'][i % 2 == 0]
+            tid = ['1105', '1089'][i % 2 != 0]
             self.move(gid, tid, m)
             i += 1
 
@@ -118,19 +128,3 @@ while True:
         print(g.start_game())
     else:
         print('Function invalid. Please input again!\n')
-
-# # j = {'teamId': '1105', 'userId': '698', 'type': 'member'}
-# # j = {'type': 'team','teamId': '1105'}
-# j = {'type': 'game', 'teamId1': '1', 'teamId2': '1', 'gameType': 'TTT'}
-# # j = {'type': 'move', 'teamId': '1041', 'gameId': '1082', 'move': '4,4'}
-#
-# r = requests.post(
-#     'http://www.notexponential.com/aip2pgaming/api/index.php',
-#     headers=header,
-#     data=j)
-# # r = requests.get('http://www.notexponential.com/aip2pgaming/api/index.php', json=j, headers=header)
-# print(r)
-# print(r.text)
-# print(r.headers)
-# # requests.get('http://http://www.notexponential.com/aip2pgaming/api/index.php',
-# #              )

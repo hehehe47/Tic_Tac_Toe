@@ -5,8 +5,6 @@
 # @File : test.py 
 # @Software: PyCharm
 
-import requests
-
 header = {
     'x-api-key': 'b9807dd3d0194262458e',
     'userid': '698'
@@ -17,15 +15,23 @@ tid2 = '1089'
 target = '6'
 boardSize = '20'
 
-j = {'type': 'game', 'teamId1': tid1, 'teamId2': tid2, 'gameType': 'TTT',
-     'target': target, 'boardSize': boardSize}
-res1 = requests.post('http://www.notexponential.com/aip2pgaming/api/index.php',
-                     data=j,
-                     headers=header)
-print(res1.json())
-res = requests.get(
-    'http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + str(res1.json()['gameId']),
-    headers=header)
-print(res.json()['output'])
-a = [(1, 2), (2, 3)][True]
+# j = {'type': 'game', 'teamId1': tid1, 'teamId2': tid2, 'gameType': 'TTT',
+#      'target': target, 'boardSize': boardSize}
+# res1 = requests.post('http://www.notexponential.com/aip2pgaming/api/index.php',
+#                      data=j,
+#                      headers=header)
+# print(res1.json())
+# res = requests.get(
+#     'http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + str(res1.json()['gameId']),
+#     headers=header)
+# print(res.json()['output'])
+# a = [[str(1), str(2)), (str(2), str(3))][True]
+
+
+a = 10
+b = 20
+a = a ^ b
+b = a ^ b
+a = a ^ b
 print(a)
+print(b)
