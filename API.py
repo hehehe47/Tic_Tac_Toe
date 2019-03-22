@@ -16,8 +16,8 @@ from Eval import findbestmove as bmove
 
 class Game:
     def __init__(self):
-        self.target = 6
-        self.boardSize = 12
+        self.target = 5
+        self.boardSize = 7
         self.header = {
             'x-api-key': 'b9807dd3d0194262458e',
             'userid': '698'
@@ -36,20 +36,23 @@ class Game:
     def create_game(self):
         c, res = True, {'code': 'FAIL'}
         while res['code'] == 'FAIL':
-            if c:
-                tmp = list(input('Please input TeamID1 and TeamID2 (ID1 ID2): ').split(' '))
-                c = False
-            else:
-                print('Error occurs. Please input again.')
-                tmp = list(input('Please input TeamID1 and TeamID2 (ID1 ID2): ').split(' '))
-            tid1, tid2 = tmp[0], tmp[1]
+            # if c:
+            #     tmp = list(input('Please input TeamID1 and TeamID2 (ID1 ID2): ').split(' '))
+            #     c = False
+            # else:
+            #     print('Error occurs. Please input again.')
+            #     tmp = list(input('Please input TeamID1 and TeamID2 (ID1 ID2): ').split(' '))
+            # tid1, tid2 = tmp[0], tmp[1]
+            tid1, tid2 = '1105', '1089'
             j = {'type': 'game', 'teamId1': tid1, 'teamId2': tid2, 'gameType': 'TTT',
                  'target': self.target, 'boardSize': self.boardSize}
             res = post('http://www.notexponential.com/aip2pgaming/api/index.php',
                        data=j,
                        headers=self.header)
             res = res.json()
+
         print('Create Game Successfully! GameID= ' + str(res['gameId']))
+        return str(res['gameId'])
 
     def get_moves(self, gid):
         count = '20'
@@ -87,9 +90,9 @@ class Game:
             # print(res_j.get('message', 'null'))
             print(res_j.get('message', 'Can\'t make such move.') + '\n')
 
-    def start_game(self):
+    def start_game(self, gid):
         i = 0
-        gid = input('Please input GameID: ')
+        # gid = input('Please input GameID: ')
         while True:
             res = get('http://www.notexponential.com/aip2pgaming/api/index.php?type=boardString&gameId=' + gid,
                       headers=self.header)
@@ -102,8 +105,19 @@ class Game:
             # m =
             # TODO: minimax return X or O
 
-            if i == 0:
-                m = str(self.boardSize // 2) + ',' + str(self.boardSize // 2)
+            if i < 10:
+                # m = str(self.boardSize // 2) + ',' + str(self.boardSize // 2)
+                m = [str(self.boardSize // 2) + ',' + str(self.boardSize // 2),
+                     str(self.boardSize // 2) + ',' + str(self.boardSize // 2 + 1),
+                     str(self.boardSize // 2 + 1) + ',' + str(self.boardSize // 2),
+                     str(self.boardSize // 2 + 1) + ',' + str(self.boardSize // 2 - 1),
+                     str(self.boardSize // 2 + 1) + ',' + str(self.boardSize // 2 + 1),
+                     str(self.boardSize // 2 - 1) + ',' + str(self.boardSize // 2 + 2),
+                     str(self.boardSize // 2 + 2) + ',' + str(self.boardSize // 2),
+                     str(self.boardSize // 2) + ',' + str(self.boardSize // 2 - 1),
+                     str(self.boardSize // 2 - 1) + ',' + str(self.boardSize // 2 - 1),
+                     str(self.boardSize // 2 - 1) + ',' + str(self.boardSize // 2)
+                     ][i]
             else:
                 a, b = bmove(list_map, self.target, i % 2 != 0)  # True for X
                 m = str(a) + ',' + str(b)
@@ -123,8 +137,8 @@ g = Game()
 while True:
     step = g.menu()
     if step == 1:
-        g.create_game()
+        gid = g.create_game()
     elif step == 2:
-        print(g.start_game())
+        print(g.start_game(gid))
     else:
         print('Function invalid. Please input again!\n')

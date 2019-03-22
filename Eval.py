@@ -1,25 +1,46 @@
 import sys
 
 
-def score(l, n):
-    score = 0
-    for i in range(len(l) - n + 1):
-        temp = 0
-        count = 0
-        for j in range(n):
-            cell = l[i + j]
-            if cell == '-':
-                count = 0
-            elif cell == 'X' and temp >= 0:
-                count += 1
-                temp += 10 ** count
-            elif cell == 'O' and temp <= 0:
-                count += 1
-                temp -= 10 ** count
-            else:
-                temp = 0
-        score += temp
-    return score
+def score(l, target):
+    value = 0
+    length = len(l)
+    i = 0
+    while i < length:
+        if (l[i] == 'X'):
+            cnt = 1
+            blk = 0
+            j = 1
+            if (l[i - 1] == 'O' or i == 0):
+                blk += 1
+            while i + j < length and l[i + j] == 'X':
+                cnt += 1
+                j += 1
+            i += j
+            if (i >= length):
+                blk += 1
+            elif (l[i] == 'O'):
+                blk += 1
+            value += getValue(cnt, blk, target)
+        i += 1
+        if value == 10 ** target:
+            print(l)
+            print('end')
+            exit(0)
+
+    return value
+
+
+def getValue(cnt, blk, target):
+    # no block around the connect cnt
+    if (blk == 0):
+        return 10 ** cnt
+    elif (blk == 1):
+        return 10 ** (cnt - 1)
+    else:
+        if (cnt >= target):
+            return 10 ** target
+        else:
+            return 0
 
 
 def ismoveleft(board):
@@ -70,10 +91,12 @@ def evaluation_Function(board, n):
 
 
 def minimax(board, n, depth, ismax, a, b):
-    utility = evaluation_Function(board, n)
+    # utility = evaluation_Function(board, n)
+    # utility =
 
-    if depth > 2 or utility >= 10 ** n or utility <= -10 ** n:
-        return utility
+    # if depth == 0 or utility >= 10 ** n or utility <= -10 ** n:
+    if depth == 0:
+        return evaluation_Function(board, n)
     if not ismoveleft(board):
         return False
 
@@ -84,7 +107,7 @@ def minimax(board, n, depth, ismax, a, b):
                 if board[i][j] == '-':
                     board[i][j] = 'X'
 
-                    best = max(best, minimax(board, n, depth + 1, not ismax, a, b))
+                    best = max(best, minimax(board, n, depth - 1, not ismax, a, b))
                     board[i][j] = '-'
                     if best >= b:
                         return best
@@ -97,7 +120,7 @@ def minimax(board, n, depth, ismax, a, b):
             for j in range(len(board)):
                 if board[i][j] == '-':
                     board[i][j] = 'O'
-                    best = min(best, minimax(board, n, depth + 1, ismax, a, b))
+                    best = min(best, minimax(board, n, depth - 1, ismax, a, b))
                     board[i][j] = '-'
                     if best <= a:
                         return best
@@ -119,7 +142,7 @@ def findbestmove(board, n, ismax):
         for j in range(len(board)):
             if board[i][j] == '-':
                 board[i][j] = player
-                utility = minimax(board, n, 0, not ismax, -10000, 10000)
+                utility = minimax(board, n, 2, not ismax, -float('inf'), float('inf'))
                 board[i][j] = '-'
                 if utility > best:
                     row = i
