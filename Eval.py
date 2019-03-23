@@ -1,6 +1,10 @@
 import sys
 
 
+# score is a value by 10's exponential time
+# one in a row is 1
+# two in a row is 10
+# three in a row is 100
 def score(l, n):
     score = 0
     for i in range(len(l) - n + 1):
@@ -23,6 +27,7 @@ def score(l, n):
     return score
 
 
+# any blank to move?
 def ismoveleft(board):
     for row in board:
         for cell in row:
@@ -31,6 +36,7 @@ def ismoveleft(board):
     return False
 
 
+# anybody has won?
 def checkstatus(board, n):
     if not ismoveleft(board):
         print('Draw')
@@ -44,6 +50,8 @@ def checkstatus(board, n):
         exit()
 
 
+# evaluate the whole board
+# by adding row's, column's and diagonal’s total score
 def evaluation_Function(board, n):
     sum = 0
     length = len(board)
@@ -95,14 +103,18 @@ def evaluation_Function(board, n):
     return sum
 
 
+# minimax function
 def minimax(board, n, depth, ismax, a, b):
     utility = evaluation_Function(board, n)
-
+    # limit depth
+    # if utility means game ends, just return
     if depth >= 2 or utility >= 10 ** n or utility <= -10 ** n:
         return utility - 10 * depth
+    # if no blanks, just return
     if not ismoveleft(board):
         return False
 
+    # max function
     if ismax:
         best = -sys.maxsize
         for i in range(len(board)):
@@ -116,6 +128,7 @@ def minimax(board, n, depth, ismax, a, b):
                     a = max(a, best)
         return best
 
+    # min function
     else:
         best = sys.maxsize
         for i in range(len(board)):
@@ -130,6 +143,7 @@ def minimax(board, n, depth, ismax, a, b):
         return best
 
 
+# find the best move for player ‘X’
 def findmax(board, n):
     best = -sys.maxsize
     row = -1
@@ -146,10 +160,13 @@ def findmax(board, n):
                     best = utility
 
     board[row][column] = 'X'
+    # check if either player has won
+    # if won, whole program exit
     checkstatus(board, n)
     return row, column
 
 
+# find the best move for player ‘O’
 def findmin(board, n):
     best = sys.maxsize
     row = -1
@@ -166,6 +183,7 @@ def findmin(board, n):
                     best = utility
 
     board[row][column] = 'O'
+    # check if either player has won
+    # if won, whole program exit
     checkstatus(board, n)
     return row, column
-
