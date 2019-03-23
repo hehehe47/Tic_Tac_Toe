@@ -1,46 +1,27 @@
 import sys
 
 
-def score(l, target):
-    value = 0
-    length = len(l)
-    i = 0
-    while i < length:
-        if (l[i] == 'X'):
-            cnt = 1
-            blk = 0
-            j = 1
-            if (l[i - 1] == 'O' or i == 0):
-                blk += 1
-            while i + j < length and l[i + j] == 'X':
-                cnt += 1
-                j += 1
-            i += j
-            if (i >= length):
-                blk += 1
-            elif (l[i] == 'O'):
-                blk += 1
-            value += getValue(cnt, blk, target)
-        i += 1
-        if value == 10 ** target:
-            print(l)
-            print('end')
-            exit(0)
-
-    return value
-
-
-def getValue(cnt, blk, target):
-    # no block around the connect cnt
-    if (blk == 0):
-        return 10 ** cnt
-    elif (blk == 1):
-        return 10 ** (cnt - 1)
-    else:
-        if (cnt >= target):
-            return 10 ** target
-        else:
-            return 0
+def score(l, n):
+    score = 0
+    for i in range(len(l) - n + 1):
+        temp = 0
+        count = 0
+        for j in range(n):
+            cell = l[i + j]
+            if cell == '-':
+                count = 0
+            elif cell == 'X' and temp >= 0:
+                count += 1
+                temp += 10 ** count
+            elif cell == 'O' and temp <= 0:
+                count += 1
+                temp -= 10 ** count
+            else:
+                count = 0
+                temp = 0
+                break
+        score += temp
+    return score
 
 
 def ismoveleft(board):
@@ -56,11 +37,15 @@ def evaluation_Function(board, n):
     length = len(board)
     for row in board:
         utility = score(row, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
 
     for i in range(length):
-        column = [r[i] for r in board]
+        column = [row[i] for row in board]
         utility = score(column, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
 
     for i in range(n - 1, length):
@@ -68,36 +53,43 @@ def evaluation_Function(board, n):
         for j in range(i + 1):
             l1.append(board[j][i - j])
         utility = score(l1, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
     for i in range(1, length - n + 1):
         l1 = []
         for j in range(i, length):
             l1.append(board[j][length - j + i - 1])
         utility = score(l1, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
     for i in range(0, length - n + 1):
         l1 = []
         for j in range(length - i):
             l1.append(board[i + j][j])
         utility = score(l1, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
     for i in range(1, length - n + 1):
         l1 = []
         for j in range(length - i):
             l1.append(board[j][i + j])
         utility = score(l1, n)
+        if abs(utility) > 10 ** n:
+            return utility
         sum += utility
     return sum
 
 
 def minimax(board, n, depth, ismax, a, b):
-    # utility = evaluation_Function(board, n)
-    # utility =
+    utility = evaluation_Function(board, n)
 
-    # if depth == 0 or utility >= 10 ** n or utility <= -10 ** n:
-    if depth == 0:
-        return evaluation_Function(board, n)
+    if depth >= 2 or utility >= 10 ** n or utility <= -10 ** n:
+        return utility - 10 * depth
     if not ismoveleft(board):
+        print('平')
         return False
 
     if ismax:
@@ -106,8 +98,7 @@ def minimax(board, n, depth, ismax, a, b):
             for j in range(len(board)):
                 if board[i][j] == '-':
                     board[i][j] = 'X'
-
-                    best = max(best, minimax(board, n, depth - 1, not ismax, a, b))
+                    best = max(best, minimax(board, n, depth + 1, False, a, b))
                     board[i][j] = '-'
                     if best >= b:
                         return best
@@ -120,7 +111,7 @@ def minimax(board, n, depth, ismax, a, b):
             for j in range(len(board)):
                 if board[i][j] == '-':
                     board[i][j] = 'O'
-                    best = min(best, minimax(board, n, depth - 1, ismax, a, b))
+                    best = min(best, minimax(board, n, depth + 1, True, a, b))
                     board[i][j] = '-'
                     if best <= a:
                         return best
@@ -128,24 +119,48 @@ def minimax(board, n, depth, ismax, a, b):
         return best
 
 
-def findbestmove(board, n, ismax):
+def findmax(board, n):
     best = -sys.maxsize
     row = -1
     column = -1
-
-    if ismax:
-        player = 'X'
-    else:
-        player = 'O'
-
     for i in range(len(board)):
         for j in range(len(board)):
             if board[i][j] == '-':
-                board[i][j] = player
-                utility = minimax(board, n, 2, not ismax, -float('inf'), float('inf'))
+                board[i][j] = 'X'
+                utility = minimax(board, n, 1, False, -sys.maxsize, sys.maxsize)
                 board[i][j] = '-'
-                if utility > best:
+                if utility >= best:
                     row = i
                     column = j
                     best = utility
-    return (row, column)
+    return row, column
+
+
+def checkstatus(board, n):
+    if not ismoveleft(board):
+        print('Draw')
+        exit()
+    utility = evaluation_Function(board, n)
+    if utility > 10 ** n:
+        print('X wins')
+        exit()
+    elif utility < -10 ** n:
+        print('O wins')
+        exit()
+
+
+def findmin(board, n):
+    best = sys.maxsize
+    row = -1
+    column = -1
+    for i in range(len(board)):
+        for j in range(len(board)):
+            if board[i][j] == '-':
+                board[i][j] = 'O'
+                utility = minimax(board, n, 1, True, -sys.maxsize, sys.maxsize)
+                board[i][j] = '-'
+                if utility <= best:
+                    row = i
+                    column = j
+                    best = utility
+    return row, column
