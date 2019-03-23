@@ -28,10 +28,5 @@ boardSize = '20'
 # a = [[str(1), str(2)), (str(2), str(3))][True]
 
 
-a = 10
-b = 20
-a = a ^ b
-b = a ^ b
-a = a ^ b
-print(a)
-print(b)
+a = 'True'
+print(bool(a) == False)

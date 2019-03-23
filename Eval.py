@@ -17,7 +17,6 @@ def score(l, n):
                 count += 1
                 temp -= 10 ** count
             else:
-                count = 0
                 temp = 0
                 break
         score += temp
@@ -30,6 +29,19 @@ def ismoveleft(board):
             if cell == '-':
                 return True
     return False
+
+
+def checkstatus(board, n):
+    if not ismoveleft(board):
+        print('Draw')
+        exit()
+    utility = evaluation_Function(board, n)
+    if utility > 10 ** n:
+        print('X wins')
+        exit()
+    elif utility < -10 ** n:
+        print('O wins')
+        exit()
 
 
 def evaluation_Function(board, n):
@@ -89,7 +101,6 @@ def minimax(board, n, depth, ismax, a, b):
     if depth >= 2 or utility >= 10 ** n or utility <= -10 ** n:
         return utility - 10 * depth
     if not ismoveleft(board):
-        print('平')
         return False
 
     if ismax:
@@ -133,20 +144,10 @@ def findmax(board, n):
                     row = i
                     column = j
                     best = utility
+
+    board[row][column] = 'X'
+    checkstatus(board, n)
     return row, column
-
-
-def checkstatus(board, n):
-    if not ismoveleft(board):
-        print('Draw')
-        exit()
-    utility = evaluation_Function(board, n)
-    if utility > 10 ** n:
-        print('X wins')
-        exit()
-    elif utility < -10 ** n:
-        print('O wins')
-        exit()
 
 
 def findmin(board, n):
@@ -163,4 +164,8 @@ def findmin(board, n):
                     row = i
                     column = j
                     best = utility
+
+    board[row][column] = 'O'
+    checkstatus(board, n)
     return row, column
+
