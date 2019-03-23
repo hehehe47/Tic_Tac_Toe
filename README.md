@@ -1,5 +1,5 @@
 # Tic_Tac_Toe
-Tic_Tac_Toe for CS6511
+
 Environment: 
 n generalized tic-tac-toe is a zero-sum adversarial game. The environment of this game is deterministic, discreted, sequential and 1-agent. 	
 
