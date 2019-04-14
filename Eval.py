@@ -37,17 +37,17 @@ def ismoveleft(board):
 
 
 # anybody has won?
-def checkstatus(board, n):
-    if not ismoveleft(board):
-        print('Draw')
-        exit()
-    utility = evaluation_Function(board, n)
-    if utility > 10 ** n:
-        print('X wins')
-        exit()
-    elif utility < -10 ** n:
-        print('O wins')
-        exit()
+# def checkstatus(board, n):
+#     if not ismoveleft(board):
+#         print('Draw')
+#         exit()
+#     utility = evaluation_Function(board, n)
+#     if utility > 10 ** n:
+#         print('X wins')
+#         exit()
+#     elif utility < -10 ** n:
+#         print('O wins')
+#         exit()
 
 
 # evaluate the whole board
@@ -162,7 +162,7 @@ def findmax(board, n):
     board[row][column] = 'X'
     # check if either player has won
     # if won, whole program exit
-    checkstatus(board, n)
+    # checkstatus(board, n)
     return row, column
 
 
@@ -185,5 +185,5 @@ def findmin(board, n):
     board[row][column] = 'O'
     # check if either player has won
     # if won, whole program exit
-    checkstatus(board, n)
+    # checkstatus(board, n)
     return row, column

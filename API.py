@@ -11,8 +11,6 @@ import time
 from requests import get
 from requests import post
 
-from Eval import checkstatus
-
 
 class Game:
     def __init__(self):
@@ -171,7 +169,7 @@ class Game:
             self.print_board(list_map)
             # check if either player has won
             # if won, whole program exit
-            checkstatus(list_map, self.target)
+            # checkstatus(list_map, self.target)
             i += 1
 
 
